@@ -1,11 +1,13 @@
 import { Link } from 'react-router';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, LogOut, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 
 export function Header() {
   const { getItemCount } = useCart();
+  const { user, logout, isAuthenticated } = useAuth();
   const itemCount = getItemCount();
 
   return (
@@ -22,11 +24,32 @@ export function Header() {
             </div>
           </Link>
 
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-4">
             <Link to="/">
               <Button variant="ghost">Home</Button>
             </Link>
-            <Link to="/cart" className="relative">
+            
+            {isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-zinc-600 hidden md:inline-block">
+                  Hi, {user?.name}
+                </span>
+                <Button variant="ghost" size="icon" onClick={logout} title="Logout">
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link to="/login">
+                  <Button variant="ghost">Login</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button variant="default">Sign Up</Button>
+                </Link>
+              </div>
+            )}
+
+            <Link to="/cart" className="relative ml-2">
               <Button variant="outline" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
                 {itemCount > 0 && (
